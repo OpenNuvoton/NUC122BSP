@@ -71,7 +71,6 @@ void SYS_Init(void)
     /* Set GPB multi-function pins for UART0 RXD(PB.0) and TXD(PB.1) */
     SYS->GPB_MFP &= ~(SYS_GPB_MFP_PB0_Msk | SYS_GPB_MFP_PB1_Msk);
     SYS->GPB_MFP |= (SYS_GPB_MFP_PB0_UART0_RXD | SYS_GPB_MFP_PB1_UART0_TXD);
-
 }
 
 void UART0_Init()
