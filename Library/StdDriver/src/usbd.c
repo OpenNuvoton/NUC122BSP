@@ -51,6 +51,7 @@ static volatile uint32_t g_usbd_UsbAddr = 0;
 static volatile uint32_t g_usbd_UsbConfig = 0;
 static volatile uint32_t g_usbd_CtrlMaxPktSize = 8;
 static volatile uint32_t g_usbd_UsbAltInterface = 0;
+static volatile uint8_t  g_usbd_CtrlInZeroFlag = 0;
 /**
  * @endcond
  */
@@ -545,6 +546,10 @@ void USBD_PrepareCtrlIn(uint8_t *pu8Buf, uint32_t u32Size)
         // Data size <= MXPLD
         g_usbd_CtrlInPointer = 0;
         g_usbd_CtrlInSize = 0;
+
+        if(u32Size == g_usbd_CtrlMaxPktSize)
+            g_usbd_CtrlInZeroFlag = 1;
+
         USBD_SET_DATA1(EP0);
         USBD_MemCopy((uint8_t *)USBD_BUF_BASE + USBD_GET_EP_BUF_ADDR(EP0), pu8Buf, u32Size);
         USBD_SET_PAYLOAD_LEN(EP0, u32Size);
@@ -563,8 +568,6 @@ void USBD_PrepareCtrlIn(uint8_t *pu8Buf, uint32_t u32Size)
   */
 void USBD_CtrlIn(void)
 {
-    static uint8_t u8ZeroFlag = 0;
-    
     if(g_usbd_CtrlInSize)
     {
         // Process remained data
@@ -581,8 +584,10 @@ void USBD_CtrlIn(void)
             // Data size <= MXPLD
             USBD_MemCopy((uint8_t *)USBD_BUF_BASE + USBD_GET_EP_BUF_ADDR(EP0), (uint8_t *)g_usbd_CtrlInPointer, g_usbd_CtrlInSize);
             USBD_SET_PAYLOAD_LEN(EP0, g_usbd_CtrlInSize);
+
             if(g_usbd_CtrlInSize == g_usbd_CtrlMaxPktSize)
-                u8ZeroFlag = 1;
+                g_usbd_CtrlInZeroFlag = 1;
+
             g_usbd_CtrlInPointer = 0;
             g_usbd_CtrlInSize = 0;
         }
@@ -599,10 +604,10 @@ void USBD_CtrlIn(void)
         }
 
         // For size if n x MXPLD
-        if(u8ZeroFlag)
+        if(g_usbd_CtrlInZeroFlag)
         {
             USBD_SET_PAYLOAD_LEN(EP0, 0);
-            u8ZeroFlag = 0;
+            g_usbd_CtrlInZeroFlag = 0;
         }
 
         // No more data for IN token
