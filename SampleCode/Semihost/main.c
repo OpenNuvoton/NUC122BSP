@@ -12,6 +12,9 @@
 #include <stdio.h>
 #include "NUC122.h"
 
+# if defined (__GNUC__)
+extern void initialise_monitor_handles(void);
+#endif
 
 /*---------------------------------------------------------------------------------------------------------*/
 /* Main Function                                                                                            */
@@ -33,6 +36,10 @@ int32_t main()
         NOTE2: Semihost only works with Nuvoton NuLink ICE Dongle in debug mode.
         NOTE3: It does not print any message if Nuvoton NuLink ICE Dongle is not connected.
     */
+
+#if (defined (__GNUC__) && (!(defined(__ARMCC_VERSION))))
+    initialise_monitor_handles();
+#endif
 
     printf("\n Start SEMIHOST test: \n");
 

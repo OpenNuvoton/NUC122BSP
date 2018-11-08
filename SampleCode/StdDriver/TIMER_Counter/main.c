@@ -141,7 +141,7 @@ int main(void)
     /* Configure Timer1 setting for external counter input function */
     TIMER_SET_PRESCALE_VALUE(TIMER1, 0);
     TIMER_SET_CMP_VALUE(TIMER1, 56789);
-    TIMER_EnableEventCounter(TIMER1, NULL);
+    TIMER_EnableEventCounter(TIMER1, (uint32_t)NULL);
     TIMER_EnableInt(TIMER1);
 
     /* Enable Timer1 NVIC */

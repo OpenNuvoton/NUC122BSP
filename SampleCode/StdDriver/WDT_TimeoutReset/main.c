@@ -143,7 +143,7 @@ int main(void)
 
     /* Enable WDT time-out reset function and select time-out interval to 2^14 * WDT clock then start WDT counting */
     g_u8IsWDTTimeoutINT = 0;
-    WDT_Open(WDT_TIMEOUT_2POW14, NULL, TRUE, FALSE);
+    WDT_Open(WDT_TIMEOUT_2POW14, (uint32_t)NULL, TRUE, FALSE);
 
     /* Enable WDT interrupt function */
     WDT_EnableInt();

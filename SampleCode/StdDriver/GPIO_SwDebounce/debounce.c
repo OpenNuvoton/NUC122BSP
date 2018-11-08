@@ -16,16 +16,16 @@
 //-------- <<< Use Configuration Wizard in Context Menu >>> -----------------
 
 // <o> Debounce Timer Selection <0=> TIMER0 <1=> TIMER1 <2=> TIMER2 <3=> TIMER3
-// <i> To selection Timer which is used to deboucne GPIO input.
+// <i> To selection Timer which is used to debounce GPIO input.
 
 /******************************************************************
  Modify Here:
-    A timer for debounce is necssary. TIMER0 ~ 3 could be configured here.
+    A timer for debounce is necessary. TIMER0 ~ 3 could be configured here.
     
  *******************************************************************/
 #define TIMER_NUM       0       /* Select TIMER0, TIMER1, TIMER2 or TIMER3 */
 
-// <o> Debunce Time <1-10000:1><#*10>
+// <o> Debounce Time <1-10000:1><#*10>
 // <i> Debounce Timer setting in ms
 #define DEBOUNCE_TIME           30                      /* Debounce time in 0.1ms unit */
 #define TIMER_COMPARED_VALUE    DEBOUNCE_TIME*1200      /* Timer compared value */

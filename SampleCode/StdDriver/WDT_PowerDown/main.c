@@ -155,7 +155,7 @@ int main(void)
 
     /* Enable WDT wake-up function and select time-out interval to 2^16 * WDT clock then start WDT counting */
     g_u8IsWDTWakeupINT = 0;
-    WDT_Open(WDT_TIMEOUT_2POW16, NULL, FALSE, TRUE);
+    WDT_Open(WDT_TIMEOUT_2POW16, (uint32_t)NULL, FALSE, TRUE);
     
     /* Enable WDT interrupt function */
     WDT_EnableInt();
