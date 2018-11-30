@@ -5826,19 +5826,19 @@ typedef volatile unsigned long  vu32;       ///< Define 32-bit unsigned volatile
 /******************************************************************************/
 /*                         Peripheral header files                            */
 /******************************************************************************/
-#include "SYS.h"
-#include "FMC.h"
-#include "GPIO.h"
-#include "I2C.h"
-#include "PWM.h"
-#include "SPI.h"
-#include "TIMER.h"
-#include "WDT.h"
-#include "UART.h"
-#include "USBD.h"
-#include "PS2.h"
-#include "CLK.h"
-#include "RTC.h"
+#include "sys.h"
+#include "fmc.h"
+#include "gpio.h"
+#include "i2c.h"
+#include "pwm.h"
+#include "spi.h"
+#include "timer.h"
+#include "wdt.h"
+#include "uart.h"
+#include "usbd.h"
+#include "ps2.h"
+#include "clk.h"
+#include "rtc.h"
 
 #endif
 
