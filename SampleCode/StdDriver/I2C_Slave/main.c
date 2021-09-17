@@ -16,9 +16,11 @@
 #define PLLCON_SETTING      CLK_PLLCON_60MHz_HXT
 #define PLL_CLOCK           60000000
 
-uint32_t slave_buff_addr;
-uint8_t g_au8SlvData[256];
-uint8_t g_au8SlvRxData[3];
+static uint32_t slave_buff_addr;
+static uint8_t g_au8SlvData[256];
+static uint8_t g_au8SlvRxData[3];
+static volatile uint8_t g_u8SlvTRxAbortFlag = 0;
+static volatile uint8_t g_u8TimeoutFlag = 0;
 /*---------------------------------------------------------------------------------------------------------*/
 /* Global variables                                                                                        */
 /*---------------------------------------------------------------------------------------------------------*/
@@ -42,6 +44,7 @@ void I2C1_IRQHandler(void)
     {
         /* Clear I2C1 Timeout Flag */
         I2C_ClearTimeoutFlag(I2C1);
+        g_u8TimeoutFlag = 1;
     }
     else
     {
@@ -103,8 +106,21 @@ void I2C_SlaveTRx(uint32_t u32Status)
     }
     else
     {
-        /* TO DO */
-        printf("Status 0x%x is NOT processed\n", u32Status);
+        printf("[SlaveTRx] Status [0x%x] Unexpected abort!!\n", u32Status);
+        if(u32Status == 0x68)               /* Slave receive arbitration lost, clear SI */
+        {
+            I2C_SET_CONTROL_REG(I2C1, I2C_I2CON_SI_AA);
+        }
+        else if(u32Status == 0xB0)          /* Address transmit arbitration lost, clear SI  */
+        {
+            I2C_SET_CONTROL_REG(I2C1, I2C_I2CON_SI_AA);
+        }
+        else                                /* Slave bus error, stop I2C and clear SI */
+        {
+            I2C_SET_CONTROL_REG(I2C1, I2C_I2CON_STO_SI);
+            I2C_SET_CONTROL_REG(I2C1, I2C_I2CON_SI);
+        }
+        g_u8SlvTRxAbortFlag = 1;
     }
 }
 
@@ -256,7 +272,31 @@ int32_t main(void)
     printf("\n");
     printf("I2C Slave Mode is Running.\n");
 
-    while(1);
+    g_u8TimeoutFlag = 0;
+
+    while(1)
+    {
+        /* Handle Slave timeout condition */
+        if(g_u8TimeoutFlag)
+        {
+            printf(" SlaveTRx time out, any to reset IP\n");
+            getchar();
+            SYS->IPRSTC2 |= SYS_IPRSTC2_I2C1_RST_Msk;
+            SYS->IPRSTC2 = 0;
+            I2C1_Init();
+            g_u8TimeoutFlag = 0;
+            g_u8SlvTRxAbortFlag = 1;
+        }
+        /* When I2C abort, clear SI to enter non-addressed SLV mode*/
+        if(g_u8SlvTRxAbortFlag)
+        {
+            g_u8SlvTRxAbortFlag = 0;
+
+            while(I2C1->I2CON & I2C_I2CON_SI_Msk);
+            printf("I2C Slave re-start. status[0x%x]\n", I2C1->I2CSTATUS);
+            I2C_SET_CONTROL_REG(I2C1, I2C_I2CON_SI_AA);
+        }
+    }
 }
 
 
