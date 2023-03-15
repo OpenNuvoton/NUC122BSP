@@ -175,6 +175,11 @@ int main(void)
     /* Access TX and RX register */
     while((s_u32MasterRxDataCount < TEST_COUNT) || (s_u32SlaveRxDataCount < TEST_COUNT))
     {
+        /* Ready to transfer */
+        SPI_TRIGGER(SPI1);
+        /* Ready to transfer */
+        SPI_TRIGGER(SPI0);
+
         /* Check Master TX data count */
         if(s_u32MasterTxDataCount < TEST_COUNT)
             SPI_WRITE_TX0(SPI1, s_au32MasterToSlaveTestPattern[s_u32MasterTxDataCount++]); /* Write to TX register */
@@ -182,19 +187,14 @@ int main(void)
         if(s_u32SlaveTxDataCount < TEST_COUNT)
             SPI_WRITE_TX0(SPI0, s_au32SlaveToMasterTestPattern[s_u32SlaveTxDataCount++]); /* Write to TX register */
 
-        /* Ready to transfer */
-        SPI_TRIGGER(SPI1);
         /* Check busy flag */
         while(SPI_IS_BUSY(SPI1));
         /* Read RX register */
         s_au32MasterRxBuffer[s_u32MasterRxDataCount++] = SPI_READ_RX0(SPI1);
-
         /* Check busy flag */
         while(SPI_IS_BUSY(SPI0));
         /* Read RX register */
         s_au32SlaveRxBuffer[s_u32SlaveRxDataCount++] = SPI_READ_RX0(SPI0);
-        /* Ready to transfer */
-        SPI_TRIGGER(SPI0);
     }
 
     /* Print the received data */
