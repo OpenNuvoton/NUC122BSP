@@ -3,7 +3,8 @@
  * @brief    USB Billboard header file
  *
  * @note
- * Copyright (C) 2013 Nuvoton Technology Corp. All rights reserved.
+ * @copyright SPDX-License-Identifier: Apache-2.0
+ * @copyright Copyright (C) 2014~2015 Nuvoton Technology Corp. All rights reserved.
  ******************************************************************************/
 #ifndef __USBD_BILLBOARD_H__
 #define __USBD_BILLBOARD_H__

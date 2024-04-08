@@ -3,8 +3,8 @@
  * @version  V1.00
  * @brief    CMSIS Device Startup File
  *
- * SPDX-License-Identifier: Apache-2.0
- * @copyright (C) 2018 Nuvoton Technology Corp. All rights reserved.
+ * @copyright SPDX-License-Identifier: Apache-2.0
+ * @copyright Copyright (C) 2014~2015 Nuvoton Technology Corp. All rights reserved.
  *****************************************************************************/
 
 
@@ -257,6 +257,33 @@ Reset_Handler:
     
     .align  1
     .thumb_func
+    .weak   HardFault_Handler
+    .type   HardFault_Handler, % function
+
+ HardFault_Handler:
+
+    MOV     R0, LR
+    MRS     R1, MSP
+    MRS     R2, PSP
+    LDR     R3, =ProcessHardFault
+    BLX     R3
+    BX      R0
+
+    .size   HardFault_Handler, . - HardFault_Handler
+
+    .align  1
+    .thumb_func
+    .weak   ProcessHardFaultx
+    .type   ProcessHardFaultx, % function
+
+ ProcessHardFaultx:
+    B       .
+
+    .size   ProcessHardFaultx, . - ProcessHardFaultx
+
+
+    .align  1
+    .thumb_func
     .weak   Default_Handler
     .type   Default_Handler, % function
     
@@ -274,7 +301,7 @@ Default_Handler:
     .endm
     
     def_irq_handler NMI_Handler
-    def_irq_handler HardFault_Handler
+    //def_irq_handler HardFault_Handler
     def_irq_handler SVC_Handler
     def_irq_handler PendSV_Handler
     def_irq_handler SysTick_Handler
@@ -301,5 +328,24 @@ Default_Handler:
     def_irq_handler PWRWU_IRQHandler
     def_irq_handler RTC_IRQHandler
     
+    
+    /* ;int32_t SH_DoCommand(int32_t n32In_R0, int32_t n32In_R1, int32_t *pn32Out_R0) */
+    .align 2
+    .thumb_func
+    .type SH_DoCommand, % function
+    
+SH_DoCommand:
+    
+    BKPT   0xAB                /* ; Wait ICE or HardFault */
+    //LDR    R3, = SH_Return
+    MOV    R4, lr
+    BLX    R3                  /* ; Call SH_Return. The return value is in R0 */
+    BX     R4                  /* ; Return value = R0 */
+    .size  SH_DoCommand, . - SH_DoCommand
+    
+    .align  2
+    .thumb_func
+    .global __PC
+    .type   __PC, % function
     
     .end

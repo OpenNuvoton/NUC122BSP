@@ -6,9 +6,9 @@
  * @brief    NUC122 Series Peripheral Access Layer Header File
  *
  * @note
- * SPDX-License-Identifier: Apache-2.0
- * Copyright (C) 2014~2015 Nuvoton Technology Corp. All rights reserved.
+ * @copyright SPDX-License-Identifier: Apache-2.0
  *
+ * @copyright Copyright (C) 2014~2015 Nuvoton Technology Corp. All rights reserved.
  ******************************************************************************/
 
 /**
@@ -29,7 +29,6 @@
   *
   * Copyright (C) 2014~2015 Nuvoton Technology Corp. All rights reserved.
   */
-
 
 #ifndef __NUC122_H__
 #define __NUC122_H__

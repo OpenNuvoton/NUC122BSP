@@ -5,8 +5,9 @@
  * $Date: 15/07/08 2:59p $
  * @brief    Transmit and receive data from PC terminal through RS232 interface.
  * @note
- * Copyright (C) 2014 Nuvoton Technology Corp. All rights reserved.
+ * @copyright SPDX-License-Identifier: Apache-2.0
  *
+ * @copyright Copyright (C) 2014~2015 Nuvoton Technology Corp. All rights reserved.
  ******************************************************************************/
 #include <stdio.h>
 #include "NUC122.h"
