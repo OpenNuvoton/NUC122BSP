@@ -369,7 +369,7 @@ __STATIC_INLINE void UART_SET_RTS(UART_T* uart)
  *
  *    @return       None
  *
- *    @details      This macro clear RS-485address byte detection flag.
+ *    @details      This macro clear RS-485 address byte detection flag.
  */
 #define UART_RS485_CLEAR_ADDR_FLAG(uart)    ((uart)->FSR = UART_FSR_RS485_ADD_DETF_Msk)
 
@@ -382,7 +382,7 @@ __STATIC_INLINE void UART_SET_RTS(UART_T* uart)
  *    @retval       0 Receiver detects a data that is not an address bit.
  *    @retval       1 Receiver detects a data that is an address bit.
  *
- *    @details      This macro get RS-485address byte detection flag.
+ *    @details      This macro get RS-485 address byte detection flag.
  */
 #define UART_RS485_GET_ADDR_FLAG(uart)    (((uart)->FSR  & UART_FSR_RS485_ADD_DETF_Msk) >> UART_FSR_RS485_ADD_DETF_Pos)
 

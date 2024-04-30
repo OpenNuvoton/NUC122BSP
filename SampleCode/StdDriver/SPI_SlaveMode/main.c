@@ -32,6 +32,7 @@ void SPI_Init(void);
 int main(void)
 {
     volatile uint32_t u32DataCount;
+    uint32_t u32TimeOutCnt;
 
     /* Unlock protected registers */
     SYS_UnlockReg();
@@ -83,7 +84,15 @@ int main(void)
         /* Ready to transfer */
         SPI_TRIGGER(SPI0);
         /* Check busy flag */
-        while(SPI_IS_BUSY(SPI0));
+        u32TimeOutCnt = SystemCoreClock; /* 1 second time-out */
+        while(SPI_IS_BUSY(SPI0))
+        {
+            if(--u32TimeOutCnt == 0)
+            {
+                printf("Wait for SPI busy flag is cleared time-out!\n");
+                goto lexit;
+            }
+        }
         /* Read RX register */
         g_au32DestinationData[u32DataCount] = SPI_READ_RX0(SPI0);
         u32DataCount++;
@@ -96,6 +105,8 @@ int main(void)
         printf("%d:\t0x%X\n", u32DataCount, g_au32DestinationData[u32DataCount]);
     }
     printf("The data transfer was done.\n");
+
+lexit:
 
     printf("\n\nExit SPI driver sample code.\n");
 

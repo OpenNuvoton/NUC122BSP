@@ -140,7 +140,9 @@ void UART_TEST_HANDLE()
 {
     uint8_t u8InChar = 0xFF;
     uint32_t u32IntSts = UART0->ISR;
+    uint32_t u32TimeOutCnt;
 
+    /* Receive Data Available Interrupt Handle */
     if(u32IntSts & UART_ISR_RDA_INT_Msk)
     {
         printf("\nInput:");
@@ -170,6 +172,7 @@ void UART_TEST_HANDLE()
         printf("\nTransmission Test:");
     }
 
+    /* Transmit Holding Register Empty Interrupt Handle */
     if(u32IntSts & UART_ISR_THRE_INT_Msk)
     {
         uint16_t tmp;
@@ -177,7 +180,9 @@ void UART_TEST_HANDLE()
         if(g_u32comRhead != tmp)
         {
             u8InChar = g_u8RecData[g_u32comRhead];
-            while(UART_IS_TX_FULL(UART0));  /* Wait Tx is not full to transmit data */               
+            u32TimeOutCnt = SystemCoreClock; /* 1 second time-out */
+            while(UART_IS_TX_FULL(UART0))    /* Wait Tx is not full to transmit data */
+                if(--u32TimeOutCnt == 0) break;
             UART_WRITE(UART0, u8InChar);
             g_u32comRhead = (g_u32comRhead == (RXBUFSIZE - 1)) ? 0 : (g_u32comRhead + 1);
             g_u32comRbytes--;
@@ -205,7 +210,7 @@ void UART_FunctionTest()
         UART0 will print the received char on screen.
     */
 
-    /* Enable Interrupt and install the call back function */
+    /* Enable Interrupt */
     UART_EnableInt(UART0, (UART_IER_RDA_IEN_Msk | UART_IER_THRE_IEN_Msk | UART_IER_RTO_IEN_Msk));
     while(g_bWait);
 

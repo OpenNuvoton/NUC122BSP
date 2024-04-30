@@ -66,31 +66,40 @@ static volatile uint32_t g_u32hiHour, g_u32loHour, g_u32hiMin, g_u32loMin, g_u32
   *                             - \ref RTC_AM
   *                             - \ref RTC_PM
   *
-  * @return     None
+  * @retval      0: SUCCESS
+  * @retval     -1: Initialize RTC module fail
   *
   * @details    This function is used to: \n
   *                 1. Write initial key to let RTC start count.  \n
   *                 2. Input parameter indicates start date/time. \n
   * @note       Null pointer for using default starting date/time.
   */
-void RTC_Open(S_RTC_TIME_DATA_T *sPt)
+int32_t RTC_Open(S_RTC_TIME_DATA_T *sPt)
 {
+    uint32_t u32TimeOutCnt;
+
     RTC->INIR = RTC_INIT_KEY;
 
     if(RTC->INIR != 0x1)
     {
         RTC->INIR = RTC_INIT_KEY;
-        while(RTC->INIR != 0x1);
+        u32TimeOutCnt = RTC_TIMEOUT;
+        while(RTC->INIR != 0x1)
+            if(--u32TimeOutCnt == 0) return -1;
     }
 
-    if(sPt == NULL)
-        return ;
+    if(sPt != NULL)
+    {
+        /* Set RTC date and time */
+        RTC_SetDateAndTime(sPt);
 
-    /* Set RTC date and time */
-    RTC_SetDateAndTime(sPt);
+        /* Waiting for RTC settings stable */
+        u32TimeOutCnt = RTC_TIMEOUT;
+        while((RTC->AER & RTC_AER_ENF_Msk) == RTC_AER_ENF_Msk)
+            if(--u32TimeOutCnt == 0) return -1;
+    }
 
-    /* Waiting for RTC settings stable */
-    while((RTC->AER & RTC_AER_ENF_Msk) == RTC_AER_ENF_Msk);
+    return 0;
 }
 
 /**

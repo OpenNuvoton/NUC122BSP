@@ -55,7 +55,7 @@ void I2C1_IRQHandler(void)
 }
 
 /*---------------------------------------------------------------------------------------------------------*/
-/*  I2C TRx Callback Function                                                                               */
+/*  I2C TRx Callback Function                                                                              */
 /*---------------------------------------------------------------------------------------------------------*/
 void I2C_SlaveTRx(uint32_t u32Status)
 {
@@ -227,7 +227,7 @@ void I2C1_Close(void)
 /*---------------------------------------------------------------------------------------------------------*/
 int32_t main(void)
 {
-    uint32_t i;
+    uint32_t i, u32TimeOutCnt;
 
     /* Unlock protected registers */
     SYS_UnlockReg();
@@ -246,11 +246,11 @@ int32_t main(void)
         and Byte Read operations, and check if the read data is equal to the programmed data.
     */
 
-    printf("+------------------------------------------------------_-+\n");
+    printf("+--------------------------------------------------------+\n");
     printf("|  NUC122 I2C Driver Sample Code(Slave) for access Slave |\n");
     printf("|                                                        |\n");
     printf("| I2C Master (I2C1) <---> I2C Slave(I2C1)                |\n");
-    printf("+-------------------------------------------------------_+\n");
+    printf("+--------------------------------------------------------+\n");
 
     printf("Configure I2C1 as a slave.\n");
     printf("The I/O connection for I2C1:\n");
@@ -292,8 +292,10 @@ int32_t main(void)
         if(g_u8SlvTRxAbortFlag)
         {
             g_u8SlvTRxAbortFlag = 0;
+            u32TimeOutCnt = I2C_TIMEOUT;
+            while(I2C1->I2CON & I2C_I2CON_SI_Msk)
+                if(--u32TimeOutCnt == 0) break;
 
-            while(I2C1->I2CON & I2C_I2CON_SI_Msk);
             printf("I2C Slave re-start. status[0x%x]\n", I2C1->I2CSTATUS);
             I2C_SET_CONTROL_REG(I2C1, I2C_I2CON_SI_AA);
         }

@@ -141,11 +141,11 @@ int32_t main(void)
 }
 
 /*---------------------------------------------------------------------------------------------------------*/
-/*  AutoFlow Function Tx Test                                                                                 */
+/*  AutoFlow Function Tx Test                                                                              */
 /*---------------------------------------------------------------------------------------------------------*/
 void AutoFlow_FunctionTxTest()
 {
-    uint32_t u32i;
+    uint32_t u32i, u32TimeOutCnt;
 
     printf("\n");
     printf("+-----------------------------------------------------------+\n");
@@ -166,7 +166,7 @@ void AutoFlow_FunctionTxTest()
     printf("|  Description :                                            |\n");
     printf("|    The sample code needs two boards. One is Master and    |\n");
     printf("|    the other is slave. Master will send 1k bytes data     |\n");
-    printf("|    to slave.Slave will check if received data is correct  |\n");
+    printf("|    to slave. Slave will check if received data is correct |\n");
     printf("|    after getting 1k bytes data.                           |\n");
     printf("|    Press any key to start...                              |\n");
     printf("+-----------------------------------------------------------+\n");
@@ -182,9 +182,18 @@ void AutoFlow_FunctionTxTest()
         UART_WRITE(UART1, u32i & 0xFF);
 
         /* Wait if Tx FIFO is full */
-        while(UART_IS_TX_FULL(UART1));
+        u32TimeOutCnt = SystemCoreClock; /* 1 second time-out */
+        while(UART_IS_TX_FULL(UART1))
+        {
+            if(--u32TimeOutCnt == 0)
+            {
+                printf("Wait for UART Tx FIFO full flag is cleared time-out!\n");
+                break;
+            }
+        }
     }
 
-    printf("\n Transmit Done\n");
+    if( u32i==RXBUFSIZE )
+        printf("\n Transmit Done\n");
 
 }

@@ -72,7 +72,7 @@ void SYS_Init(void)
     /* Waiting for clock ready */
     CLK_WaitClockReady(CLK_CLKSTATUS_PLL_STB_Msk | CLK_CLKSTATUS_XTL12M_STB_Msk | CLK_CLKSTATUS_OSC22M_STB_Msk);
 
-    /* Switch HCLK clock source to PLL, STCLK to HCLK/2 */
+    /* Switch HCLK clock source to PLL */
     CLK_SetHCLK(CLK_CLKSEL0_HCLK_S_PLL, CLK_CLKDIV_HCLK(2));
 
     /* Enable UART module clock */

@@ -185,7 +185,7 @@ void I2C1_Close(void)
 /*---------------------------------------------------------------------------------------------------------*/
 int32_t main(void)
 {
-    uint32_t i;
+    uint32_t i, u32TimeOutCnt;
 
     /* Unlock protected registers */
     SYS_UnlockReg();
@@ -214,7 +214,7 @@ int32_t main(void)
     printf("The I/O connection for I2C1:\n");
     printf("I2C1_SDA(PA.10), I2C1_SCL(PA.11)\n");
 
-    /* Init I2C1 to access EEPROM */
+    /* Init I2C1 */
     I2C1_Init();
 
     printf("\n");
@@ -241,9 +241,19 @@ int32_t main(void)
         I2C_SET_CONTROL_REG(I2C1, I2C_I2CON_STA);
 
         /* Wait I2C Tx Finish */
-        while(g_u8MstEndFlag == 0);
+        u32TimeOutCnt = I2C_TIMEOUT;
+        while(g_u8MstEndFlag == 0)
+        {
+            if(--u32TimeOutCnt == 0)
+            {
+                printf("Wait for I2C Tx finish time-out!\n");
+                goto lexit;
+            }
+        }
     }
     printf("Master Access Slave(0x%X) at GC Mode Test OK\n", g_u8DeviceAddr);
+
+lexit:
 
     s_I2C1HandlerFn = NULL;
 

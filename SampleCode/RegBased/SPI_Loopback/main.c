@@ -45,9 +45,9 @@ void SPI_Init(void);
 int main(void)
 {
 #ifndef TwoPortLoopback
-    uint32_t u32TestCount, u32Err, u32TimeOutCnt;
+    uint32_t u32TestCount, u32Err;
 #endif
-    uint32_t u32DataCount;
+    uint32_t u32DataCount, u32TimeOutCnt;
 
     /* Unlock protected registers */
     SYS_UnlockReg();
@@ -190,11 +190,27 @@ int main(void)
             SPI_WRITE_TX0(SPI0, s_au32SlaveToMasterTestPattern[s_u32SlaveTxDataCount++]); /* Write to TX register */
 
         /* Check busy flag */
-        while(SPI_IS_BUSY(SPI1));
+        u32TimeOutCnt = SystemCoreClock; /* 1 second time-out */
+        while(SPI_IS_BUSY(SPI1))
+        {
+            if(--u32TimeOutCnt == 0)
+            {
+                printf("Wait for SPI1 busy flag is cleared time-out!\n");
+                goto lexit;
+            }
+        }
         /* Read RX register */
         s_au32MasterRxBuffer[s_u32MasterRxDataCount++] = SPI_READ_RX0(SPI1);
         /* Check busy flag */
-        while(SPI_IS_BUSY(SPI0));
+        u32TimeOutCnt = SystemCoreClock; /* 1 second time-out */
+        while(SPI_IS_BUSY(SPI0))
+        {
+            if(--u32TimeOutCnt == 0)
+            {
+                printf("Wait for SPI0 busy flag is cleared time-out!\n");
+                goto lexit;
+            }
+        }
         /* Read RX register */
         s_au32SlaveRxBuffer[s_u32SlaveRxDataCount++] = SPI_READ_RX0(SPI0);
     }

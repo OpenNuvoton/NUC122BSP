@@ -6,7 +6,7 @@
  * $Date: 16/06/08 2:28p $
  * @brief    Software debounce API with NUC122 Series.
  *           It uses GPIO interrupt with timer timeout to filter I/O bouncing.
- *           
+ *
  * @note
  * @copyright SPDX-License-Identifier: Apache-2.0
  * @copyright Copyright (C) 2014~2015 Nuvoton Technology Corp. All rights reserved.
@@ -22,7 +22,7 @@
 /******************************************************************
  Modify Here:
     A timer for debounce is necessary. TIMER0 ~ 3 could be configured here.
-    
+
  *******************************************************************/
 #define TIMER_NUM       0       /* Select TIMER0, TIMER1, TIMER2 or TIMER3 */
 
@@ -35,7 +35,7 @@
 /******************************************************************
  Modify Here:
     GPIO Port and bit could be modify here.
-    
+
  *******************************************************************/
 #define PORT                    PC                      /* GPIO Port: PA, PB, PC, PD or PE */
 #define BIT                     8                       /* Bit of the GPIO Port. it could be 0 ~ 15 */
@@ -45,28 +45,28 @@
 
 
 #if (TIMER_NUM == 0)
-# define TIMER                   TIMER0                  
+# define TIMER                   TIMER0
 # define TIMER_CLKEN_Msk         CLK_APBCLK_TMR0_EN_Msk
 # define TIMER_CLKSRC_Msk        CLK_CLKSEL1_TMR0_S_Msk
 # define TIMER_CLKSRC            CLK_CLKSEL1_TMR0_S_HXT
 # define DBNCE_IRQHandler        TMR0_IRQHandler
 # define TIMER_IRQn              TMR0_IRQn
 #elif (TIMER_NUM == 1)
-# define TIMER                   TIMER1                  
+# define TIMER                   TIMER1
 # define TIMER_CLKEN_Msk         CLK_APBCLK_TMR1_EN_Msk
 # define TIMER_CLKSRC_Msk        CLK_CLKSEL1_TMR1_S_Msk
 # define TIMER_CLKSRC            CLK_CLKSEL1_TMR1_S_HXT
 # define DBNCE_IRQHandler        TMR1_IRQHandler
 # define TIMER_IRQn              TMR1_IRQn
 #elif (TIMER_NUM == 2)
-# define TIMER                   TIMER2                  
+# define TIMER                   TIMER2
 # define TIMER_CLKEN_Msk         CLK_APBCLK_TMR2_EN_Msk
 # define TIMER_CLKSRC_Msk        CLK_CLKSEL1_TMR2_S_Msk
 # define TIMER_CLKSRC            CLK_CLKSEL1_TMR2_S_HXT
 # define DBNCE_IRQHandler        TMR2_IRQHandler
 # define TIMER_IRQn              TMR2_IRQn
 #elif (TIMER_NUM == 3)
-# define TIMER                   TIMER3                  
+# define TIMER                   TIMER3
 # define TIMER_CLKEN_Msk         CLK_APBCLK_TMR3_EN_Msk
 # define TIMER_CLKSRC_Msk        CLK_CLKSEL1_TMR3_S_Msk
 # define TIMER_CLKSRC            CLK_CLKSEL1_TMR3_S_HXT
@@ -80,18 +80,18 @@ void DBNCE_Init(void)
 {
     /* Enable Timer Clock Source */
     CLK->APBCLK |= TIMER_CLKEN_Msk;
-    
+
     /* Select Clock as HXT 12MHz */
     CLK->CLKSEL1 = (CLK->CLKSEL1 & (~TIMER_CLKSRC_Msk)) | TIMER_CLKSRC;
-    
+
     /* Reset Timer */
     TIMER->TCSR = TIMER_TCSR_CRST_Msk;
     while(TIMER->TCSR);
-            
+
     /* Enable Timer IRQ */
     NVIC_EnableIRQ(TIMER_IRQn);
-    
-    
+
+
     /******************************************************************
      Modify Here:
         All Debounce GPIO should be configured here.
@@ -99,17 +99,17 @@ void DBNCE_Init(void)
           2. Enable GPIO interrupt with rising + falling edge trigger.
           3. Enable GPIO IRQ
      *******************************************************************/
-    
+
     /* Set GPIO Input */
     PORT->PMD = (PORT->PMD & (~(0x3<<BIT*2))) | (GPIO_PMD_INPUT << BIT*2);
-    
+
     /* Interrupt Type: Both Edge */
     PORT->IMD |= (GPIO_IMD_EDGE << BIT);
     PORT->IEN |= ((1 << BIT) << GPIO_IEN_IR_EN_Pos) | ((1 << BIT) << GPIO_IEN_IF_EN_Pos);
-    
+
     /* Enable GPIO IRQ */
-    NVIC_EnableIRQ(GPIO_IRQn);    
-    
+    NVIC_EnableIRQ(GPIO_IRQn);
+
 }
 
 void DBNCE_IRQHandler(void)
@@ -120,8 +120,8 @@ void DBNCE_IRQHandler(void)
        All GPIO debounce result should be return by global variable here.
      *******************************************************************/
      g_u32Debounce = PIN;
-     
-    
+
+
     /* Clear Timer Interrupt Flag */
     TIMER->TISR = TIMER_TISR_TIF_Msk;
 }
@@ -131,10 +131,10 @@ void GPIO_IRQHandler(void)
     /* Reset Timer Counter */
     TIMER->TCSR = TIMER_TCSR_CRST_Msk;
     while(TIMER->TCSR);
-    
+
     /* Debounce Time */
     TIMER->TCMPR = TIMER_COMPARED_VALUE - 1;
-    
+
     /* Start Timer */
     TIMER->TCSR = TIMER_TCSR_IE_Msk | TIMER_TCSR_CEN_Msk | TIMER_TCSR_TDR_EN_Msk | TIMER_TCSR_CACT_Msk;
     while(TIMER->TCSR & TIMER_TCSR_CACT_Msk);

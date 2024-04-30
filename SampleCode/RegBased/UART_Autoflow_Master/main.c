@@ -40,13 +40,13 @@ void SYS_Init(void)
     /* Waiting for Internal RC clock ready */
     while(!(CLK->CLKSTATUS & CLK_CLKSTATUS_OSC22M_STB_Msk));
 
-    /* Switch HCLK clock source to Internal RC and and HCLK source divide 1 */
-    CLK->CLKSEL0 = (CLK->CLKSEL0 & (~CLK_CLKSEL0_HCLK_S_Msk)) | CLK_CLKSEL0_HCLK_S_HIRC;  
+    /* Switch HCLK clock source to Internal RC and HCLK source divide 1 */
+    CLK->CLKSEL0 = (CLK->CLKSEL0 & (~CLK_CLKSEL0_HCLK_S_Msk)) | CLK_CLKSEL0_HCLK_S_HIRC;
     CLK->CLKDIV = (CLK->CLKDIV & (~CLK_CLKDIV_HCLK_N_Msk)) | CLK_CLKDIV_HCLK(1);
 
     /* Set PLL to Power-down mode */
-    CLK->PLLCON |= CLK_PLLCON_PD_Msk;     
-    
+    CLK->PLLCON |= CLK_PLLCON_PD_Msk;
+
     /* Enable external XTAL 12MHz clock */
     CLK->PWRCON |= CLK_PWRCON_XTL12M_EN_Msk;
 
@@ -59,7 +59,7 @@ void SYS_Init(void)
     CLK->CLKSEL0 = (CLK->CLKSEL0 & (~CLK_CLKSEL0_HCLK_S_Msk)) | CLK_CLKSEL0_HCLK_S_PLL;
 
     /* Update System Core Clock */
-    /* User can use SystemCoreClockUpdate() to calculate PllClock, SystemCoreClock and CycylesPerUs automatically. */
+    /* User can use SystemCoreClockUpdate() to calculate PllClock, SystemCoreClock and CyclesPerUs automatically. */
     //SystemCoreClockUpdate();
     PllClock        = PLL_CLOCK;            // PLL
     SystemCoreClock = PLL_CLOCK / 1;        // HCLK
@@ -156,11 +156,11 @@ int32_t main(void)
 }
 
 /*---------------------------------------------------------------------------------------------------------*/
-/*  AutoFlow Function Tx Test                                                                                 */
+/*  AutoFlow Function Tx Test                                                                              */
 /*---------------------------------------------------------------------------------------------------------*/
 void AutoFlow_FunctionTxTest()
 {
-    uint32_t u32i;
+    uint32_t u32i, u32TimeOutCnt;
 
     printf("\n");
     printf("+-----------------------------------------------------------+\n");
@@ -182,7 +182,7 @@ void AutoFlow_FunctionTxTest()
     printf("|  Description :                                            |\n");
     printf("|    The sample code needs two boards. One is Master and    |\n");
     printf("|    the other is slave. Master will send 1k bytes data     |\n");
-    printf("|    to slave.Slave will check if received data is correct  |\n");
+    printf("|    to slave. Slave will check if received data is correct |\n");
     printf("|    after getting 1k bytes data.                           |\n");
     printf("|    Press any key to start...                              |\n");
     printf("+-----------------------------------------------------------+\n");
@@ -201,9 +201,18 @@ void AutoFlow_FunctionTxTest()
         UART1->THR = (u32i & 0xFF);
 
         /* Wait if Tx FIFO is full */
-        while(UART1->FSR & UART_FSR_TX_FULL_Msk);
+        u32TimeOutCnt = SystemCoreClock; /* 1 second time-out */
+        while(UART1->FSR & UART_FSR_TX_FULL_Msk)
+        {
+            if(--u32TimeOutCnt == 0)
+            {
+                printf("Wait for UART Tx FIFO full flag is cleared time-out!\n");
+                break;
+            }
+        }
     }
 
-    printf("\n Transmit Done\n");
+    if( u32i==RXBUFSIZE )
+        printf("\n Transmit Done\n");
 
 }

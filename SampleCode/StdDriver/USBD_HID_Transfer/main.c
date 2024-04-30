@@ -104,7 +104,7 @@ int32_t main(void)
     /* Unlock write-protected registers */
     SYS_UnlockReg();
 
-    /* Init system and multi-funcition I/O */
+    /* Init system and multi-function I/O */
     SYS_Init();
 
     /* Init UART for debug message */

@@ -186,7 +186,7 @@ void UART_EnableInt(UART_T*  uart, uint32_t u32InterruptFlag)
 void UART_Open(UART_T* uart, uint32_t u32baudrate)
 {
     uint8_t u8UartClkSrcSel, u8UartClkDivNum;
-    uint32_t u32ClkTbl[4] = {__HXT, 0, 0, __HIRC};
+    uint32_t au32ClkTbl[4] = {__HXT, 0, 0, __HIRC};
     uint32_t u32Baud_Div = 0;
 
     /* Get UART clock source selection */
@@ -206,15 +206,15 @@ void UART_Open(UART_T* uart, uint32_t u32baudrate)
 
     /* Get PLL clock frequency if UART clock source selection is PLL */
     if(u8UartClkSrcSel == 1)
-        u32ClkTbl[u8UartClkSrcSel] = CLK_GetPLLClockFreq();
+        au32ClkTbl[u8UartClkSrcSel] = CLK_GetPLLClockFreq();
 
     /* Set UART baud rate */
     if(u32baudrate != 0)
     {
-        u32Baud_Div = UART_BAUD_MODE2_DIVIDER((u32ClkTbl[u8UartClkSrcSel]) / (u8UartClkDivNum + 1), u32baudrate);
+        u32Baud_Div = UART_BAUD_MODE2_DIVIDER((au32ClkTbl[u8UartClkSrcSel]) / (u8UartClkDivNum + 1), u32baudrate);
 
         if(u32Baud_Div > 0xFFFF)
-            uart->BAUD = (UART_BAUD_MODE0 | UART_BAUD_MODE0_DIVIDER((u32ClkTbl[u8UartClkSrcSel]) / (u8UartClkDivNum + 1), u32baudrate));
+            uart->BAUD = (UART_BAUD_MODE0 | UART_BAUD_MODE0_DIVIDER((au32ClkTbl[u8UartClkSrcSel]) / (u8UartClkDivNum + 1), u32baudrate));
         else
             uart->BAUD = (UART_BAUD_MODE2 | u32Baud_Div);
     }
@@ -284,7 +284,7 @@ uint32_t UART_Read(UART_T* uart, uint8_t *pu8RxBuf, uint32_t u32ReadBytes)
 void UART_SetLine_Config(UART_T* uart, uint32_t u32baudrate, uint32_t u32data_width, uint32_t u32parity, uint32_t  u32stop_bits)
 {
     uint8_t u8UartClkSrcSel, u8UartClkDivNum;
-    uint32_t u32ClkTbl[4] = {__HXT, 0, 0, __HIRC};
+    uint32_t au32ClkTbl[4] = {__HXT, 0, 0, __HIRC};
     uint32_t u32Baud_Div = 0;
 
     /* Get UART clock source selection */
@@ -295,15 +295,15 @@ void UART_SetLine_Config(UART_T* uart, uint32_t u32baudrate, uint32_t u32data_wi
 
     /* Get PLL clock frequency if UART clock source selection is PLL */
     if(u8UartClkSrcSel == 1)
-        u32ClkTbl[u8UartClkSrcSel] = CLK_GetPLLClockFreq();
+        au32ClkTbl[u8UartClkSrcSel] = CLK_GetPLLClockFreq();
 
     /* Set UART baud rate */
     if(u32baudrate != 0)
     {
-        u32Baud_Div = UART_BAUD_MODE2_DIVIDER((u32ClkTbl[u8UartClkSrcSel]) / (u8UartClkDivNum + 1), u32baudrate);
+        u32Baud_Div = UART_BAUD_MODE2_DIVIDER((au32ClkTbl[u8UartClkSrcSel]) / (u8UartClkDivNum + 1), u32baudrate);
 
         if(u32Baud_Div > 0xFFFF)
-            uart->BAUD = (UART_BAUD_MODE0 | UART_BAUD_MODE0_DIVIDER((u32ClkTbl[u8UartClkSrcSel]) / (u8UartClkDivNum + 1), u32baudrate));
+            uart->BAUD = (UART_BAUD_MODE0 | UART_BAUD_MODE0_DIVIDER((au32ClkTbl[u8UartClkSrcSel]) / (u8UartClkDivNum + 1), u32baudrate));
         else
             uart->BAUD = (UART_BAUD_MODE2 | u32Baud_Div);
     }
@@ -343,13 +343,13 @@ void UART_SetTimeoutCnt(UART_T* uart, uint32_t u32TOC)
  *                                  - \ref UART_IRCR_RX_SELECT
  *
  *    @return       None
-  *
+ *
  *    @details      The function is used to configure IrDA relative settings. It consists of TX or RX mode and baudrate.
  */
 void UART_SelectIrDAMode(UART_T* uart, uint32_t u32Buadrate, uint32_t u32Direction)
 {
     uint8_t u8UartClkSrcSel, u8UartClkDivNum;
-    uint32_t u32ClkTbl[4] = {__HXT, 0, 0, __HIRC};
+    uint32_t au32ClkTbl[4] = {__HXT, 0, 0, __HIRC};
     uint32_t u32Baud_Div;
 
     /* Select IrDA function mode */
@@ -363,12 +363,12 @@ void UART_SelectIrDAMode(UART_T* uart, uint32_t u32Buadrate, uint32_t u32Directi
 
     /* Get PLL clock frequency if UART clock source selection is PLL */
     if(u8UartClkSrcSel == 1)
-        u32ClkTbl[u8UartClkSrcSel] = CLK_GetPLLClockFreq();
+        au32ClkTbl[u8UartClkSrcSel] = CLK_GetPLLClockFreq();
 
     /* Set UART IrDA baud rate in mode 0 */
     if(u32Buadrate != 0)
     {
-        u32Baud_Div = UART_BAUD_MODE0_DIVIDER((u32ClkTbl[u8UartClkSrcSel]) / (u8UartClkDivNum + 1), u32Buadrate);
+        u32Baud_Div = UART_BAUD_MODE0_DIVIDER((au32ClkTbl[u8UartClkSrcSel]) / (u8UartClkDivNum + 1), u32Buadrate);
 
         if(u32Baud_Div < 0xFFFF)
             uart->BAUD = (UART_BAUD_MODE0 | u32Baud_Div);

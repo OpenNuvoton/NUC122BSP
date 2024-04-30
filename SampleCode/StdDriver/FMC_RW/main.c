@@ -1,3 +1,4 @@
+
 /******************************************************************************
  * @file     main.c
  * @version  V3.00
@@ -202,7 +203,7 @@ int main()
     printf("\n\nData Flash test =>\n");
     if(FlashTest(DATA_FLASH_TEST_BASE, DATA_FLASH_TEST_END, TEST_PATTERN) < 0)
     {
-        printf("\n\nUHB test failed!\n");
+        printf("\n\nData Flash test failed!\n");
         goto lexit;
     }
 

@@ -27,7 +27,7 @@ volatile uint32_t g_u32RTCTickINT;
  *
  * @return      None
  *
- * @details     The RTC_IRQHandler is default IRQ of RTC, declared in startup_NUC200Series.s.
+ * @details     The RTC_IRQHandler is default IRQ of RTC, declared in startup_NUC122.s.
  */
 void RTC_IRQHandler(void)
 {
@@ -127,7 +127,12 @@ int main(void)
     sWriteRTC.u32Minute     = 30;
     sWriteRTC.u32Second     = 30;
     sWriteRTC.u32TimeScale  = RTC_CLOCK_24;
-    RTC_Open(&sWriteRTC);
+    if( RTC_Open(&sWriteRTC) < 0 )
+    {
+        printf("\n RTC initial fail!!");
+        printf("\n Please check h/w setting!!");
+        goto lexit;
+    }
 
     /* Enable RTC tick interrupt, one RTC tick is 1/4 second */
     NVIC_EnableIRQ(RTC_IRQn);
@@ -156,12 +161,16 @@ int main(void)
             if(u32Sec == sReadRTC.u32Second)
             {
                 printf("\nRTC tick period time is incorrect.\n");
-                while(1);
+                break;
             }
 
             u32Sec = sReadRTC.u32Second;
         }
     }
+
+lexit:
+
+    while(1);
 }
 
 /*** (C) COPYRIGHT 2013 Nuvoton Technology Corp. ***/

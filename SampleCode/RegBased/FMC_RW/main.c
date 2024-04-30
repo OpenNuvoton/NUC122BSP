@@ -20,6 +20,8 @@
 #define DATA_FLASH_TEST_END         0x20000
 #define TEST_PATTERN                0x5A5A5A5A
 
+int32_t g_FMC_i32ErrCode;
+
 void SYS_Init(void)
 {
     int32_t i;
@@ -51,11 +53,11 @@ void SYS_Init(void)
     CLK->CLKSEL1 = CLK_CLKSEL1_UART_S_PLL;
 
     /* Update System Core Clock */
-    /* User can use SystemCoreClockUpdate() to calculate PllClock, SystemCoreClock and CycylesPerUs automatically. */
+    /* User can use SystemCoreClockUpdate() to calculate PllClock, SystemCoreClock and CyclesPerUs automatically. */
     //SystemCoreClockUpdate();
     PllClock        = PLL_CLOCK;            // PLL
     SystemCoreClock = PLL_CLOCK / 1;        // HCLK
-    CyclesPerUs     = PLL_CLOCK / 1000000;  // For SYS_SysTickDelay()
+    CyclesPerUs     = PLL_CLOCK / 1000000;  // For CLK_SysTickDelay()
 
     /*---------------------------------------------------------------------------------------------------------*/
     /* Init I/O Multi-function                                                                                 */
@@ -216,7 +218,7 @@ int main()
     printf("\n\nData Flash test =>\n");
     if(FlashTest(DATA_FLASH_TEST_BASE, DATA_FLASH_TEST_END, TEST_PATTERN) < 0)
     {
-        printf("\n\nUHB test failed!\n");
+        printf("\n\nData Flash test failed!\n");
         goto lexit;
     }
 

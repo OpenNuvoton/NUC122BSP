@@ -579,10 +579,10 @@ Example: If user want to set PA.10 as I2C1_SDA and PA.11 as I2C1_SCL in initial 
 
 /**
   * @brief      Get reset source is from Low-Voltage-Reset
-  * @param      None     
+  * @param      None
   * @retval     0   Previous reset source is not from Low-Voltage-Reset
   * @retval     >=1 Previous reset source is from Low-Voltage-Reset
-  * @details    This macro get previous reset source is from Low-Voltage-Reset.   
+  * @details    This macro get previous reset source is from Low-Voltage-Reset.
   */
 #define SYS_IS_LVR_RST()                (SYS->RSTSRC & SYS_RSTSRC_RSTS_LVR_Msk)
 
@@ -696,11 +696,14 @@ static __INLINE void SYS_LockReg(void)
   */
 static __INLINE void SYS_UnlockReg(void)
 {
+    uint32_t u32TimeOutCnt = __HIRC;
+
     while(SYS->REGWRPROT != SYS_REGWRPROT_REGPROTDIS_Msk)
     {
         SYS->REGWRPROT = 0x59;
         SYS->REGWRPROT = 0x16;
         SYS->REGWRPROT = 0x88;
+        if(--u32TimeOutCnt == 0) break;
     }
 }
 

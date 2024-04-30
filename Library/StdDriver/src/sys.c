@@ -45,7 +45,7 @@ extern "C"
   */
 void SYS_ClearResetSrc(uint32_t u32Src)
 {
-    SYS->RSTSRC |= u32Src;
+    SYS->RSTSRC = u32Src;
 }
 
 /**
@@ -135,7 +135,7 @@ void SYS_ResetCPU(void)
   *             - \ref PS2_RST
   *             - \ref USBD_RST
   * @return     None
-  * @details    This function reset selected modules.
+  * @details    This function reset selected module.
   */
 void SYS_ResetModule(uint32_t u32ModuleIndex)
 {
@@ -164,13 +164,10 @@ void SYS_ResetModule(uint32_t u32ModuleIndex)
 void SYS_EnableBOD(int32_t i32Mode, uint32_t u32BODLevel)
 {
     /* Enable Brown-out Detector function */
-    SYS->BODCR |= SYS_BODCR_BOD_EN_Msk;
-
     /* Enable Brown-out interrupt or reset function */
-    SYS->BODCR = (SYS->BODCR & ~SYS_BODCR_BOD_RSTEN_Msk) | i32Mode;
-
     /* Select Brown-out Detector threshold voltage */
-    SYS->BODCR = (SYS->BODCR & ~SYS_BODCR_BOD_VL_Msk) | u32BODLevel;
+    SYS->BODCR = (SYS->BODCR & ~(SYS_BODCR_BOD_RSTEN_Msk|SYS_BODCR_BOD_VL_Msk)) |
+                 (i32Mode) | (u32BODLevel) | SYS_BODCR_BOD_EN_Msk;
 }
 
 /**

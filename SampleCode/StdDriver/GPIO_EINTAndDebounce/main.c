@@ -145,7 +145,7 @@ int main(void)
     GPIO_EnableEINT1(PB, 15, GPIO_INT_BOTH_EDGE);
     NVIC_EnableIRQ(EINT1_IRQn);
 
-    /* Enable interrupt de-bounce function and select de-bounce sampling cycle time is 1024 * 10 KHz clock */
+    /* Enable interrupt de-bounce function and select de-bounce sampling cycle time is 1024 clocks of LIRC clock */
     GPIO_SET_DEBOUNCE_TIME(GPIO_DBCLKSRC_LIRC, GPIO_DBCLKSEL_1024);
     GPIO_ENABLE_DEBOUNCE(PB, BIT14 | BIT15);
 

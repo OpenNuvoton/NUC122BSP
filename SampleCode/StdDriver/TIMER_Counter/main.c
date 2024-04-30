@@ -158,10 +158,7 @@ int main(void)
     if(TIMER_GetCounter(TIMER1) != 0)
     {
         printf("Default counter value is not 0. (%d)\n", TIMER_GetCounter(TIMER1));
-
-        /* Stop Timer1 counting */
-        TIMER_Close(TIMER1);
-        while(1);
+        goto lexit;
     }
 
     /* To generate one counter event to T1 pin */
@@ -174,17 +171,14 @@ int main(void)
         if(u32TimeoutCount++ > SystemCoreClock / 1000)
         {
             printf("Timer1 external counter function time-out.\n");
-            while(1);
+            goto lexit;
         }
     }
 
     if(TIMER_GetCounter(TIMER1) != 1)
     {
         printf("Get unexpected counter value. (%d)\n", TIMER_GetCounter(TIMER1));
-
-        /* Stop Timer1 counting */
-        TIMER_Close(TIMER1);
-        while(1);
+        goto lexit;
     }
 
     /* To generate remains counts to T1 pin */
@@ -205,6 +199,8 @@ int main(void)
             break;
         }
     }
+
+lexit:
 
     /* Stop Timer1 counting */
     TIMER_Close(TIMER1);
