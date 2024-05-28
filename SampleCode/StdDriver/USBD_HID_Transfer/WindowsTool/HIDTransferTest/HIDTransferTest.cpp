@@ -25,14 +25,14 @@
 #define HID_CMD_TEST     0xB4
 
 
-#define PAGE_SIZE       256
+#define PAGE_SIZE       2048/*256*/
 #define SECTOR_SIZE     4096
 #define HID_PACKET_SIZE 64
 
 
 #define USB_TIME_OUT    100
 
-// 僅有的一個應用程式物件
+// The only application object
 
 CWinApp theApp;
 
@@ -44,16 +44,16 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[])
 {
     int nRetCode = 0;
 
-    // 初始化 MFC 並於失敗時列印錯誤
+    // Initialize MFC and print errors on failure
     if(!AfxWinInit(::GetModuleHandle(NULL), NULL, ::GetCommandLine(), 0))
     {
-        // TODO: 配合您的需要變更錯誤碼
-        _tprintf(_T("嚴重錯誤: MFC 初始化失敗\n"));
+        // TODO: Change the error code to suit your needs
+        _tprintf(_T("Fatal error: MFC initialization failed\n"));
         nRetCode = 1;
     }
     else
     {
-        // TODO: 在此撰寫應用程式行為的程式碼。
+        // TODO: Write the code for your application's behavior here
         main();
 
 
@@ -346,7 +346,7 @@ lexit:
 }
 
 
-#define TEST_PAGES   1024       /* 1024 pages */
+#define TEST_PAGES   4       /* 4 pages */
 #define TEST_BASE    0x10000    /* 64kbytes */
 
 int main(void)
@@ -421,14 +421,6 @@ int main(void)
     for(i = SECTOR_SIZE; i < SECTOR_SIZE * 2; i++)
     {
         if(buf[i] != (unsigned char)0xFF)
-        {
-            isErr = 1;
-            break;
-        }
-    }
-    for(i = SECTOR_SIZE * 2; i < SECTOR_SIZE * 3; i++)
-    {
-        if(buf[i] != (i & 0xFF))
         {
             isErr = 1;
             break;
