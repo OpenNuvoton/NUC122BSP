@@ -56,7 +56,7 @@ int32_t SYS_Init(void)
     CLK->PWRCON |= CLK_PWRCON_OSC22M_EN_Msk;
 
     /* Waiting for Internal RC clock ready */
-    u32TimeOutCnt = SystemCoreClock; /* 1 second time-out */
+    u32TimeOutCnt = __HIRC; /* 1 second time-out */
     while(!(CLK->CLKSTATUS & CLK_CLKSTATUS_OSC22M_STB_Msk))
         if( --u32TimeOutCnt == 0) return -1;
 

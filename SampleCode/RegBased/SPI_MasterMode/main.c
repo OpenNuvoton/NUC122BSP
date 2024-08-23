@@ -23,7 +23,7 @@ volatile uint32_t g_u32TxDataCount;
 volatile uint32_t g_u32RxDataCount;
 
 /* Function prototype declaration */
-void SYS_Init(void);
+int32_t SYS_Init(void);
 void UART0_Init(void);
 void SPI_Init(void);
 
@@ -104,8 +104,10 @@ int main(void)
     while(1);
 }
 
-void SYS_Init(void)
+int32_t SYS_Init(void)
 {
+	uint32_t u32TimeOutCnt;
+
     /*---------------------------------------------------------------------------------------------------------*/
     /* Init System Clock                                                                                       */
     /*---------------------------------------------------------------------------------------------------------*/
@@ -141,6 +143,8 @@ void SYS_Init(void)
     SYS->GPC_MFP |= SYS_GPC_MFP_PC0_SPI0_SS0 | SYS_GPC_MFP_PC1_SPI0_CLK | SYS_GPC_MFP_PC2_SPI0_MISO0 | SYS_GPC_MFP_PC3_SPI0_MOSI0;
     SYS->ALT_MFP &= ~(SYS_ALT_MFP_PC0_Msk | SYS_ALT_MFP_PC1_Msk | SYS_ALT_MFP_PC2_Msk | SYS_ALT_MFP_PC3_Msk);
     SYS->ALT_MFP |= SYS_ALT_MFP_PC0_SPI0_SS0 | SYS_ALT_MFP_PC1_SPI0_CLK | SYS_ALT_MFP_PC2_SPI0_MISO0 | SYS_ALT_MFP_PC3_SPI0_MOSI0;
+
+    return 0;
 }
 
 void UART0_Init(void)
@@ -188,4 +192,3 @@ void SPI0_IRQHandler(void)
 
 
 /*** (C) COPYRIGHT 2014 Nuvoton Technology Corp. ***/
-

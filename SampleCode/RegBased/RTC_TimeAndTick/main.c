@@ -44,8 +44,10 @@ void RTC_IRQHandler(void)
     }
 }
 
-void SYS_Init(void)
+int32_t SYS_Init(void)
 {
+	uint32_t u32TimeOutCnt;
+
     /*---------------------------------------------------------------------------------------------------------*/
     /* Init System Clock                                                                                       */
     /*---------------------------------------------------------------------------------------------------------*/
@@ -68,7 +70,10 @@ void SYS_Init(void)
     CLK->PLLCON = PLLCON_SETTING;
 
     /* Waiting for clock ready */
-    while(!(CLK->CLKSTATUS & CLK_CLKSTATUS_PLL_STB_Msk));
+    u32TimeOutCnt = __HIRC;
+	while(!(CLK->CLKSTATUS & CLK_CLKSTATUS_PLL_STB_Msk))
+		if(--u32TimeOutCnt == 0) return -1;
+
     while(!(CLK->CLKSTATUS & CLK_CLKSTATUS_XTL12M_STB_Msk));
     while(!(CLK->CLKSTATUS & CLK_CLKSTATUS_XTL32K_STB_Msk));
 
@@ -91,6 +96,8 @@ void SYS_Init(void)
     /* Set PB multi-function pins for UART0 RXD, TXD */
     SYS->GPB_MFP &= ~(SYS_GPB_MFP_PB0_Msk | SYS_GPB_MFP_PB1_Msk);
     SYS->GPB_MFP |= (SYS_GPB_MFP_PB0_UART0_RXD | SYS_GPB_MFP_PB1_UART0_TXD);
+
+    return 0;
 }
 
 void UART0_Init(void)
